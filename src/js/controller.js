@@ -6,7 +6,6 @@ import searchView from './views/searchView.js';
 import resultsView from './views/resultsView.js';
 
 import 'regenerator-runtime/runtime';
-import { async } from 'regenerator-runtime';
 // https://forkify-api.herokuapp.com/v2
 
 ///////////////////////////////////////

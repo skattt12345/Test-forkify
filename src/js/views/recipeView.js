@@ -12,6 +12,15 @@ class RecipeView extends View {
       window.addEventListener(el, ev => handler(ev, handler))
     );
   }
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--update-servings');
+
+      if (!btn) return;
+      const updateTo = btn.dataset.updateTo;
+      +updateTo > 0 ? handler(+updateTo) : '';
+    });
+  }
 
   _generateMarkup() {
     return `
@@ -43,12 +52,16 @@ class RecipeView extends View {
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--update-servings" data-update-to="${
+                this._data.servings - 1
+              }">
                 <svg>
                   <use href="${icons}#icon-minus-circle"></use>
                 </svg>
               </button>
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--update-servings" data-update-to="${
+                this._data.servings + 1
+              }">
                 <svg>
                   <use href="${icons}#icon-plus-circle"></use>
                 </svg>
@@ -74,18 +87,6 @@ class RecipeView extends View {
             ${this._data.ingredients
               .map(this._generateMarkupIngridient)
               .join('')}
-        </div>
-
-            <li class="recipe__ingredient">
-              <svg class="recipe__icon">
-                <use href="${icons}#icon-check"></use>
-              </svg>
-              <div class="recipe__quantity">0.5</div>
-              <div class="recipe__description">
-                <span class="recipe__unit">cup</span>
-                ricotta cheese
-              </div>
-            </li>
           </ul>
         </div>
 

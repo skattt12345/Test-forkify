@@ -8,6 +8,7 @@ export const state = {
     page: 1,
     resultsPerPage: RESULTS_PER_PAGE,
   },
+  bookmarks: [],
 };
 
 export const loadRecipe = async function (id) {
@@ -27,7 +28,9 @@ export const loadRecipe = async function (id) {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
     };
-    console.log(state.recipe);
+
+    if (state.bookmarks.some(b => b.id === id)) state.recipe.bookmarks = true;
+    else state.recipe.bookmarks = false;
   } catch (err) {
     //temp error handling
     console.error(`${err} @@@`);
@@ -38,9 +41,7 @@ export const loadRecipe = async function (id) {
 export const loadSearchResults = async function (query) {
   try {
     state.search.query = query;
-    const data = await getJSON(
-      `https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza`
-    );
+    const data = await getJSON(`${API_URL}?search=${query}`);
     console.log(data);
     state.search.results = data.data.recipes.map(rec => {
       return {
@@ -50,6 +51,7 @@ export const loadSearchResults = async function (query) {
         image: rec.image_url,
       };
     });
+    state.search.page = 1;
   } catch (err) {
     console.error(`${err} @@@`);
     throw err;
@@ -69,4 +71,18 @@ export const updateServings = function (newServings) {
     ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
   });
   state.recipe.servings = newServings;
+};
+
+export const addBookmark = function (recipe) {
+  //add bookmars
+  state.bookmarks.push(recipe);
+
+  //mark current recipe as bookmark
+  if (recipe.id === state.recipe.id) state.recipe.bookmarks = true;
+};
+
+export const deleteBookmark = function (id) {
+  const index = state.bookmarks.findIndex(el => el.id === id);
+  state.bookmarks.splice(index, 1);
+  if (id === state.recipe.id) state.recipe.bookmarks = false;
 };
